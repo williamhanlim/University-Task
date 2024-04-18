@@ -1,0 +1,77 @@
+
+```{r}
+install.packages('devtools')
+```
+
+```{r}
+library(klaR)
+library(psych)
+library(MASS)
+library(devtools)
+library(ggplot2)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+iris <- read.csv("iris.csv", row.names="X")
+```
+
+
+```{r}
+head(iris)
+```
+
+
+
+```{r}
+#scale each predictor variable (i.e. first 4 columns)
+iris[1:4] <- scale(iris[1:4])
+```
+
+```{r}
+head(iris)
+```
+
+
+
+
+```{r}
+#fit LDA model
+model <- lda(Species~., data=iris)
+```
+
+
+```{r}
+model
+```
+
+
+
+```{r}
+#use LDA model to make predictions on test data
+predicted <- predict(model)
+names(predicted)
+```
+
+```{r}
+head(predicted$class)
+```
+
+
+```{r}
+#define data to plot
+lda_plot <- cbind(iris, predict(model)$x)
+```
+
+
+```{r}
+#create plot
+ggplot(lda_plot, aes(LD1, LD2)) +
+  geom_point(aes(color = Species))
+```
+
+
