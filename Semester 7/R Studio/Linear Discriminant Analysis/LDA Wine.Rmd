@@ -1,0 +1,92 @@
+```{r}
+wine <- read.csv("Wine.csv")
+wine[2:14]
+```
+```{r}
+library(klaR)
+library(psych)
+library(MASS)
+library(devtools)
+library(ggplot2)
+```
+```{r}
+wine[2:14] <- scale(wine[2:14])
+```
+```{r}
+model <- lda(Type~., data=wine)
+```
+```{r}
+model
+```
+```{r}
+predicted <- predict(model)
+names(predicted)
+```
+```{r}
+lda_plot <- cbind(wine, predict(model)$x)
+```
+```{r}
+ggplot(lda_plot, aes(LD1, LD2)) +
+  geom_point(aes(color = Type))
+```
+
+
+
+
+```{r}
+kmo_result <- KMO(wine[2:14])
+```
+```{r}
+kmo_result
+```
+```{r}
+br <- cortest.bartlett(wine[2:14])
+br$p.value
+```
+```{r}
+parallel <- fa.parallel(wine[2:14])
+```
+```{r}
+sapply(1:4, function(f)
+  factanal(wine[2:14], factors = f, method ="mle")$PVAL)
+```
+```{r}
+f<- factanal(wine[2:14], factors=4, method ="mle", scores = c("regression"), rotation = "varimax")
+print(f)
+```
+```{r}
+loads <- f$loadings
+fa.diagram(loads)
+```
+
+
+
+
+```{r}
+wine1 <- read.csv("Wine.csv")
+```
+
+```{r}
+results <- princomp(wine1[2:14],cor=TRUE,scores = TRUE)
+summary(results, loadings = TRUE)
+```
+```{r}
+library(FactoMineR)
+```
+```{r}
+pca<-PCA(wine1[2:14])
+```
+
+```{r}
+fviz_nbclust(wine[2:14], kmeans, method = "wss")
+```
+
+```{r}
+k3 <- kmeans(wine[2:14], centers = 3, nstart = 25)
+k3
+```
+
+
+
+
+
