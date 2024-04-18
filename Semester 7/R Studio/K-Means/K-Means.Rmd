@@ -1,0 +1,177 @@
+
+#Data Description
+
+
+```{r}
+df <- read.csv("HOUSE_PRICE.csv")
+```
+```{r}
+df
+```
+```{r}
+df <- df[,-1]
+df <- df[,-7]
+df <- df[,-7]
+df
+```
+```{r}
+rownames(df) <- df$Observation
+df <- df[,-1]
+df
+```
+
+
+```{r}
+library(psych)
+data("df")
+describe(df)
+```
+
+
+```{r}
+require(graphics)
+pairs(df, panel = panel.smooth, main = "USArrests data")
+```
+# summary
+```{r}
+summary(df)
+```
+# BUILD IN PCA
+
+## PRINCOMP
+
+```{r}
+results <- princomp(df,cor=TRUE,scores = TRUE)
+summary(results, loadings = TRUE)
+```
+## How PC explain variant
+
+
+-   The first principal component explains 32.7% of the total variance in the dataset.
+-   The second principal component explains 28.9% of the total variance in the dataset.
+-   The third principal component explains 14.3% of the total variance in the dataset.
+-   The fourth principal component explains 13.5% of the total variance in the dataset.
+-   The fifth principal component explains 8% of the total variance in the dataset.
+-   The sixth principal component explains 2.5% of the total variance in the dataset.
+-   The seventh principal component explains 0.015% of the total variance in the dataset.
+*Thus, the first two principal components explain a majority of the total variance in the data.*
+
+## How to calculate proportion
+```{r}
+results$sdev^2 / sum(results$sdev^2)
+```
+
+## Scree Diagram
+```{r}
+plot(results$sdev^2/sum(results$sdev^2), xlab = "Component number",
+ylab = "Component proportion", type = "b", main = "Scree diagram")
+```
+
+## Cumulative Scree Diagram
+```{r}
+cumulative_variance <- cumsum(results$sdev^2) / sum(results$sdev^2)
+plot(1:length(results$sdev), cumulative_variance, type = "b",
+     xlab = "Principal Component (PC)", ylab = "Cumulative Variance Explained",
+     main = "Cumulative Scree Plot for PCA")
+```
+## PCA Biplot
+
+```{r}
+biplot(results)
+```
+
+
+## Correlation
+```{r}
+cor(df)
+```
+# FactoMineR
+
+```{r}
+library(FactoMineR)
+```
+## PCA Result
+
+```{r}
+pca<-PCA(df)
+```
+
+## W/ color
+
+```{r}
+plot.PCA(pca, axes=c(1, 2), choix="ind", habillage="ind")
+```
+
+## Eigenvalues
+
+```{r}
+pca$eig
+```
+
+```{r}
+df <- na.omit(df)
+df <- scale(df)
+```
+
+
+# KMEANS
+
+```{r}
+k2 <- kmeans(df, centers = 2, nstart = 25)
+str(k2)
+```
+```{r}
+k2
+```
+```{r}
+fviz_cluster(k2, data = df)
+```
+```{r}
+k3 <- kmeans(df, centers = 3, nstart = 25)
+k4 <- kmeans(df, centers = 4, nstart = 25)
+k5 <- kmeans(df, centers = 5, nstart = 25)
+
+# plots to compare
+p1 <- fviz_cluster(k2, geom = "point", data = df) + ggtitle("k = 2")
+p2 <- fviz_cluster(k3, geom = "point",  data = df) + ggtitle("k = 3")
+p3 <- fviz_cluster(k4, geom = "point",  data = df) + ggtitle("k = 4")
+p4 <- fviz_cluster(k5, geom = "point",  data = df) + ggtitle("k = 5")
+
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+
+
+# Determining Optimal Clusters
+
+
+## Elbow Methods
+
+
+
+```{r}
+set.seed(123)
+
+fviz_nbclust(df, kmeans, method = "wss")
+```
+
+
+
+# FINAL DECISION
+
+K = 3
+
+```{r}
+# Compute k-means clustering with k = 3
+set.seed(123)
+final <- kmeans(df, 3, nstart = 25)
+print(final)
+```
+```{r}
+fviz_cluster(final, data = df)
+```
+
+
+
+
